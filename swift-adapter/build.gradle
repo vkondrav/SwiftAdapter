@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'swift-adapter'
+
+    publishedGroupId = 'com.vkondrav.swiftadapter'
+    libraryName = 'SwiftAdapter'
+    artifact = 'swift-adapter'
+
+    libraryDescription = "An extension for recyclerview that allows for much easier item expansion"
+
+    siteUrl = 'https://github.com/vkondrav/SwiftAdapter'
+    gitUrl = 'https://github.com/vkondrav/SwiftAdapter.git'
+
+    libraryVersion = '0.1.0'
+
+    developerId = 'vkondrav'
+    developerName = 'Vitaliy Kondratiev'
+    developerEmail = 'kondrav@live.ca'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
+
+    def versionMajor = 0
+    def versionMinor = 1
+    def versionPatch = 0
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
