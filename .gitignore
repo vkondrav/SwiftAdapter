@@ -1,0 +1,10 @@
+bin
+.DS_Store
+.Settings
+.gradle
+gen
+.idea
+local.properties
+build/
+*.iml
+*.apk
