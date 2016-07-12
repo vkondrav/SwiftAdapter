@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/vkondrav/SwiftAdapter'
     gitUrl = 'https://github.com/vkondrav/SwiftAdapter.git'
 
-    libraryVersion = '0.1.0'
+    libraryVersion = '1.0.0'
 
     developerId = 'vkondrav'
     developerName = 'Vitaliy Kondratiev'

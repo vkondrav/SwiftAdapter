@@ -11,6 +11,9 @@ import java.util.Locale;
  */
 public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
 
+	/**
+	 * open state of the sections when they are first started
+	 */
 	private boolean defaultOpenState = false;
 
 	public enum ItemType {
@@ -42,6 +45,9 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	private HashMap<String, Boolean> subSubsectionOpened = new HashMap<>();
 
+	/**
+	 * index class used to keep track of each item and its position in the view
+	 */
 	public static class ItemIndex {
 		public int section = -1;
 		public int subsection = -1;
@@ -69,6 +75,14 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return onCreateViewHolderItemType(parent, ItemType.values()[itemType]);
 	}
 
+	/**
+	 * main onCreate method
+	 * do not overwrite unless necessary
+	 *
+	 * @param parent
+	 * @param itemType
+	 * @return
+	 */
 	public T onCreateViewHolderItemType(ViewGroup parent, ItemType itemType) {
 		switch (itemType) {
 			case SUBSUBSECTIONROW:
@@ -89,6 +103,11 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 				return null;
 		}
 	}
+
+	/**
+	 * onCreate Methods
+	 * overwite the methonds to create each viewholder
+	 **/
 
 	public T onCreateSectionViewHolder(ViewGroup parent) {
 		return null;
@@ -149,10 +168,18 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return ItemType.UNDEFINED.ordinal();
 	}
 
+	/**
+	 * returns the current index based on the viewholder object within the
+	 * recyclerview
+	 *
+	 * @param holder
+	 * @return
+	 */
 	public ItemIndex getCurrentItemIndex(T holder) {
 		return getItemIndex(holder.getLayoutPosition());
 	}
 
+	//TODO: should probably have a more efficient way of calculating this
 	public ItemIndex getItemIndex(int position) {
 		int n = 0;
 
@@ -223,6 +250,15 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return new ItemIndex(-1, -1, -1, -1, position);
 	}
 
+	/**
+	 * main onBind method
+	 * controls all other methods
+	 * do not overwrite unless necessary
+	 *
+	 * @param holder
+	 * @param index
+	 * @param itemType
+	 */
 	public void onBindViewHolderItemType(T holder, ItemIndex index, ItemType itemType) {
 		switch (itemType) {
 			case SUBSUBSECTIONROW:
@@ -246,6 +282,11 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 				onBindSection(holder, index);
 		}
 	}
+
+	/**
+	 * onBind Methinds
+	 * overwrite each one to bind during execution
+	 **/
 
 	@Override
 	public void onBindViewHolder(T holder, int position) {
