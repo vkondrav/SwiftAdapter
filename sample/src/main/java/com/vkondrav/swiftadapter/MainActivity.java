@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		public void setBucket(Bucket bucket) {
+			closeAll();
 			this.bucket = bucket;
 			notifyDataSetChanged();
 		}

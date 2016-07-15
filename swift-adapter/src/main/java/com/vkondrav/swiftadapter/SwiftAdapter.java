@@ -3,6 +3,7 @@ package com.vkondrav.swiftadapter;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -251,6 +252,70 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	/**
+	 * get every item index for every item available in the list
+	 * //TODO: should probably have a more efficient way of calculating this
+	 *
+	 * @return
+	 */
+	public AllItemIndexes getAllItemIndices() {
+
+		AllItemIndexes allItemIndexes = new AllItemIndexes();
+
+		int n = 0;
+
+		int numberOfRowsForNoSection = getNumberOfRowsForNoSection();
+		for (int row = 0; row < numberOfRowsForNoSection; row++) {
+
+			allItemIndexes.noSectionRowItemIndices.add(new ItemIndex(-1, -1, -1, row, n));
+			n++;
+		}
+
+		int numberOfSections = getNumberOfSections();
+		for (int section = 0; section < numberOfSections; section++) {
+
+			allItemIndexes.sectionItemIndices.add(new ItemIndex(section, -1, -1, -1, n));
+			n++;
+
+			int numberOfRowsForSection = getNumberOfRowsForSectionS(section);
+			for (int row = 0; row < numberOfRowsForSection; row++) {
+
+				allItemIndexes.sectionRowItemIndices.add(new ItemIndex(section, -1, -1, row, n));
+				n++;
+			}
+
+			int numberOfSubsectionsForSection = getNumberOfSubsectionsForSectionS(section);
+			for (int subsection = 0; subsection < numberOfSubsectionsForSection; subsection++) {
+
+				allItemIndexes.subSectionItemIndices.add(new ItemIndex(section, subsection, -1, -1, n));
+				n++;
+
+				int numberOfRowsForsubsection = getNumberOfRowsForSubsectionS(section, subsection);
+				for (int row = 0; row < numberOfRowsForsubsection; row++) {
+
+					allItemIndexes.subSectionRowItemIdices.add(new ItemIndex(section, subsection, -1, row, n));
+					n++;
+				}
+
+				int numberOfSubsectionForSubsection = getNumberOfSubsectionsForSubsectionS(section, subsection);
+				for (int subsubsection = 0; subsubsection < numberOfSubsectionForSubsection; subsubsection++) {
+
+					allItemIndexes.subSubSectionItemIndices.add(new ItemIndex(section, subsection, subsubsection, -1, n));
+					n++;
+
+					int numberOfRowsForSubSubsection = getNumberOfRowsForSubSubsectionS(section, subsection, subsubsection);
+					for (int row = 0; row < numberOfRowsForSubSubsection; row++) {
+
+						allItemIndexes.subSubSectionRowItemIndices.add(new ItemIndex(section, subsection, subsubsection, row, n));
+						n++;
+					}
+				}
+			}
+		}
+
+		return allItemIndexes;
+	}
+
+	/**
 	 * main onBind method
 	 * controls all other methods
 	 * do not overwrite unless necessary
@@ -363,15 +428,7 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	public void openCloseSection(ItemIndex index) {
 
-		String key = getSectionKey(index.section);
-
-		if (sectionOpened.containsKey(key)) {
-			sectionOpened.put(key, !sectionOpened.get(key));
-		} else {
-			sectionOpened.put(key, true);
-		}
-
-		if (sectionOpened.get(key)) {
+		if (!isSectionOpen(index.section)) {
 			openSection(index);
 		} else {
 			closeSection(index);
@@ -380,11 +437,7 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	public void openCloseSection(ItemIndex index, boolean open) {
 
-		String key = getSectionKey(index.section);
-
-		sectionOpened.put(key, open);
-
-		if (open) {
+		if (!open) {
 			openSection(index);
 		} else {
 			closeSection(index);
@@ -392,6 +445,9 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	private void openSection(ItemIndex index) {
+
+		sectionOpened.put(getSectionKey(index.section), true);
+
 		int n = getNumberOfSubsectionsForSection(index.section);
 
 		for (int i = 0; i < n; i++) {
@@ -402,6 +458,8 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	private void closeSection(ItemIndex index) {
+
+		sectionOpened.put(getSectionKey(index.section), false);
 
 		int numberOfSubsectionsForSection = getNumberOfSubsectionsForSection(index.section);
 
@@ -451,15 +509,7 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	public void openCloseSubsection(ItemIndex index) {
 
-		String key = getSubsectionKey(index.section, index.subsection);
-
-		if (subsectionOpened.containsKey(key)) {
-			subsectionOpened.put(key, !subsectionOpened.get(key));
-		} else {
-			subsectionOpened.put(key, true);
-		}
-
-		if (subsectionOpened.get(key)) {
+		if (!isSubSectionOpen(index.section, index.subsection)) {
 			openSubsection(index);
 		} else {
 			closeSubsection(index);
@@ -468,11 +518,7 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	public void openCloseSubsection(ItemIndex index, boolean open) {
 
-		String key = getSubsectionKey(index.section, index.subsection);
-
-		subsectionOpened.put(key, open);
-
-		if (open) {
+		if (!open) {
 			openSubsection(index);
 		} else {
 			closeSubsection(index);
@@ -480,6 +526,8 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	private void openSubsection(ItemIndex index) {
+
+		subsectionOpened.put(getSubsectionKey(index.section, index.subsection), true);
 
 		int numberOfSubsectionsForSubsection = getNumberOfSubsectionsForSubsection(index.section, index.subsection);
 
@@ -493,6 +541,8 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	private void closeSubsection(ItemIndex index) {
+
+		subsectionOpened.put(getSubsectionKey(index.section, index.subsection), false);
 
 		int numberOfSubsectionForSubsection = getNumberOfSubsectionsForSubsection(index.section, index.subsection);
 
@@ -528,15 +578,8 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	public void openCloseSubSubsection(ItemIndex index) {
-		String key = getSubSubsectionKey(index.section, index.subsection, index.subsubsection);
 
-		if (subSubsectionOpened.containsKey(key)) {
-			subSubsectionOpened.put(key, !subSubsectionOpened.get(key));
-		} else {
-			subSubsectionOpened.put(key, true);
-		}
-
-		if (subSubsectionOpened.get(key)) {
+		if (!isSubSubsectionOpen(index.section, index.subsection, index.subsubsection)) {
 			openSubSubsection(index);
 		} else {
 			closeSubSubsection(index);
@@ -544,11 +587,8 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	}
 
 	public void openCloseSubSubsection(ItemIndex index, boolean open) {
-		String key = getSubSubsectionKey(index.section, index.subsection, index.subsubsection);
 
-		subSubsectionOpened.put(key, open);
-
-		if (open) {
+		if (!open) {
 			openSubSubsection(index);
 		} else {
 			closeSubSubsection(index);
@@ -557,10 +597,14 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	private void openSubSubsection(ItemIndex index) {
 
+		subSubsectionOpened.put(getSubSubsectionKey(index.section, index.subsection, index.subsubsection), true);
+
 		notifyItemRangeInserted(index.position + 1, getNumberOfRowsForSubSubsection(index.section, index.subsection, index.subsubsection));
 	}
 
 	private void closeSubSubsection(ItemIndex index) {
+
+		subSubsectionOpened.put(getSubSubsectionKey(index.section, index.subsection, index.subsubsection), false);
 
 		notifyItemRangeRemoved(index.position + 1, getNumberOfRowsForSubSubsection(index.section, index.subsection, index.subsubsection));
 	}
@@ -625,5 +669,67 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	public int getNumberOfRowsForNoSection() {
 		return 0;
+	}
+
+	/**
+	 * custom function to close all
+	 * this should be called before setting your new dataset and before calling notifyDataset
+	 * closes all sections to prevent weird behavior
+	 */
+	public void closeAll() {
+		AllItemIndexes allItemIndexes = getAllItemIndices();
+
+		//close all sections first then reset data
+		//this prevents weird behaviour when the dataset is vastly different from the
+		//current one
+
+		for (ItemIndex itemIndex : allItemIndexes.subSubSectionItemIndices) {
+			openCloseSubSubsection(itemIndex, false);
+		}
+
+		for (ItemIndex itemIndex : allItemIndexes.subSectionItemIndices) {
+			openCloseSubsection(itemIndex, false);
+		}
+
+		for (ItemIndex itemIndex : allItemIndexes.sectionItemIndices) {
+			openCloseSection(itemIndex, false);
+		}
+
+		notifyDataSetChanged();
+	}
+
+	/**
+	 * custom function to open all
+	 */
+	public void openAll() {
+		AllItemIndexes allItemIndexes = getAllItemIndices();
+
+		//close all sections first then reset data
+		//this prevents weird behaviour when the dataset is vastly different from the
+		//current one
+
+		for (ItemIndex itemIndex : allItemIndexes.sectionItemIndices) {
+			openCloseSection(itemIndex, true);
+		}
+
+		for (ItemIndex itemIndex : allItemIndexes.subSectionItemIndices) {
+			openCloseSubsection(itemIndex, true);
+		}
+
+		for (ItemIndex itemIndex : allItemIndexes.subSubSectionItemIndices) {
+			openCloseSubSubsection(itemIndex, true);
+		}
+
+		notifyDataSetChanged();
+	}
+
+	public static class AllItemIndexes {
+		public ArrayList<ItemIndex> noSectionRowItemIndices = new ArrayList<>();
+		public ArrayList<ItemIndex> sectionItemIndices = new ArrayList<>();
+		public ArrayList<ItemIndex> sectionRowItemIndices = new ArrayList<>();
+		public ArrayList<ItemIndex> subSectionItemIndices = new ArrayList<>();
+		public ArrayList<ItemIndex> subSectionRowItemIdices = new ArrayList<>();
+		public ArrayList<ItemIndex> subSubSectionItemIndices = new ArrayList<>();
+		public ArrayList<ItemIndex> subSubSectionRowItemIndices = new ArrayList<>();
 	}
 }
