@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfRowsForNoSection() {
+		public int getNumberOfLvl0Items() {
 			return bucket.itemList.size();
 		}
 
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.itemList
-						.get(index.row);
+						.get(index.item);
 
 				noSectionItemViewHolder.title.setText(title);
 			}
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfSections() {
+		public int getNumberOfLvl1Sections() {
 			return bucket.bucketList.size();
 		}
 
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			public void setOpen(ItemIndex index) {
-				if (isSectionOpen(index.section)) {
+				if (isLvl1SectionOpened(index.lvl1Section)) {
 					expand.setRotation(180);
 				} else {
 					expand.setRotation(0);
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.bucketList
-						.get(index.section)
+						.get(index.lvl1Section)
 						.name;
 
 				sectionViewHolder.title.setText(title);
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
 				sectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						openCloseSection(index);
+						openCloseLvl1Section(index);
 						sectionViewHolder.setOpen(index);
 					}
 				});
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfRowsForSection(int section) {
+		public int getNumberOfLvl1ItemsForSection(int section) {
 			return bucket.bucketList.get(section)
 					.itemList.size();
 		}
@@ -243,9 +243,9 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.bucketList
-						.get(index.section)
+						.get(index.lvl1Section)
 						.itemList
-						.get(index.row);
+						.get(index.item);
 
 				sectionItemViewHolder.icon1.setVisibility(View.VISIBLE);
 
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfSubsectionsForSection(int section) {
+		public int getNumberOfLvl2SectionsForSection(int section) {
 			return bucket.bucketList.get(section)
 					.bucketList.size();
 		}
@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			public void setOpen(ItemIndex index) {
-				if (isSubSectionOpen(index.section, index.subsection)) {
+				if (isLvl2SectionOpened(index.lvl1Section, index.lvl2Section)) {
 					expand.setRotation(180);
 				} else {
 					expand.setRotation(0);
@@ -293,9 +293,9 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.bucketList
-						.get(index.section)
+						.get(index.lvl1Section)
 						.bucketList
-						.get(index.subsection)
+						.get(index.lvl2Section)
 						.name;
 
 				subsectionViewHolder.title.setText(title);
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
 				subsectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						openCloseSubsection(index);
+						openCloseLvl2Section(index);
 						subsectionViewHolder.setOpen(index);
 					}
 				});
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfRowsForSubsection(int section, int subsection) {
+		public int getNumberOfLvl2ItemsForSection(int section, int subsection) {
 			return bucket.bucketList.get(section)
 					.bucketList.get(subsection)
 					.itemList.size();
@@ -347,11 +347,11 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.bucketList
-						.get(index.section)
+						.get(index.lvl1Section)
 						.bucketList
-						.get(index.subsection)
+						.get(index.lvl2Section)
 						.itemList
-						.get(index.row);
+						.get(index.item);
 
 				subsectionItemViewHolder.icon1.setVisibility(View.VISIBLE);
 				subsectionItemViewHolder.icon2.setVisibility(View.VISIBLE);
@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfSubsectionsForSubsection(int section, int subsection) {
+		public int getNumberOfLvl3SectionsForSection(int section, int subsection) {
 			return bucket.bucketList.get(section)
 					.bucketList.get(subsection)
 					.bucketList.size();
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			public void setOpen(ItemIndex index) {
-				if (isSubSubsectionOpen(index.section, index.subsection, index.subsubsection)) {
+				if (isLvl3SectionOpened(index.lvl1Section, index.lvl2Section, index.lvl3Section)) {
 					expand.setRotation(180);
 				} else {
 					expand.setRotation(0);
@@ -401,11 +401,11 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.bucketList
-						.get(index.section)
+						.get(index.lvl1Section)
 						.bucketList
-						.get(index.subsection)
+						.get(index.lvl2Section)
 						.bucketList
-						.get(index.subsubsection)
+						.get(index.lvl3Section)
 						.name;
 
 				subSubSectionViewHolder.title.setText(title);
@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
 				subSubSectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						openCloseSubSubsection(index);
+						openCloseLvl3Section(index);
 						subSubSectionViewHolder.setOpen(index);
 					}
 				});
@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfRowsForSubSubsection(int section, int subsection, int subSubsection) {
+		public int getNumberOfLvl3ItemsForSection(int section, int subsection, int subSubsection) {
 			return bucket.bucketList.get(section)
 					.bucketList.get(subsection)
 					.bucketList.get(subSubsection)
@@ -459,13 +459,13 @@ public class MainActivity extends AppCompatActivity {
 
 				String title = bucket
 						.bucketList
-						.get(index.section)
+						.get(index.lvl1Section)
 						.bucketList
-						.get(index.subsection)
+						.get(index.lvl2Section)
 						.bucketList
-						.get(index.subsubsection)
+						.get(index.lvl3Section)
 						.itemList
-						.get(index.row);
+						.get(index.item);
 
 				subSubSectionItemViewHolder.icon1.setVisibility(View.VISIBLE);
 				subSubSectionItemViewHolder.icon2.setVisibility(View.VISIBLE);

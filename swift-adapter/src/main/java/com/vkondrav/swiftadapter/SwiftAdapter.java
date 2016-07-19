@@ -17,22 +17,25 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	 */
 	private boolean defaultOpenState = false;
 
+	/**
+	 * item type used to identify each type of item in the list
+	 */
 	public enum ItemType {
-		SUBSUBSECTIONROW,
-		SUBSECTIONROW,
-		SECTIONROW,
-		NOSECTIONROW,
-		SUBSUBSECTION,
-		SUBSECTION,
-		SECTION,
+		LVL3_ITEM, //third level item, nested in lvl 3 section
+		LVL2_ITEM, //second lvl item, nested in lvl 2 section
+		LVL1_ITEM, //first lvl item, nested in lvl 1 section
+		LVL0_ITEM, //appears without any section
+		LVL3_SECTION, //third level section nested in lvl2 section
+		LVL2_SECTION, //second level section, nested in lvl1 section
+		LVL1_SECTION, //first level section
 		UNDEFINED;
 
-		public boolean isRow() {
+		public boolean isItem() {
 			switch (this) {
-				case NOSECTIONROW:
-				case SUBSUBSECTIONROW:
-				case SECTIONROW:
-				case SUBSECTIONROW:
+				case LVL0_ITEM:
+				case LVL3_ITEM:
+				case LVL1_ITEM:
+				case LVL2_ITEM:
 					return true;
 				default:
 					return false;
@@ -40,37 +43,92 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		}
 	}
 
-	private HashMap<String, Boolean> sectionOpened = new HashMap<>();
+	/**
+	 * hashmap for storing lvl1 section open/close data
+	 */
+	private HashMap<String, Boolean> lvl1SectionOpened = new HashMap<>();
 
-	private HashMap<String, Boolean> subsectionOpened = new HashMap<>();
+	/**
+	 * hashmap for storing lvl2 section open/close data
+	 */
+	private HashMap<String, Boolean> lvl2SectionOpened = new HashMap<>();
 
-	private HashMap<String, Boolean> subSubsectionOpened = new HashMap<>();
+	/**
+	 * hashmap for storing lvl3 section open/close data
+	 */
+	private HashMap<String, Boolean> lvl3SectionOpened = new HashMap<>();
 
 	/**
 	 * index class used to keep track of each item and its position in the view
 	 */
 	public static class ItemIndex {
-		public int section = -1;
-		public int subsection = -1;
-		public int subsubsection = -1;
-		public int row = -1;
-		public int position = -1;
 
-		public ItemIndex(int section, int subsection, int subsubsection, int row, int position) {
-			this.section = section;
-			this.subsection = subsection;
-			this.subsubsection = subsubsection;
-			this.row = row;
+		public int lvl1Section = -1; //position of the lvl 1 section
+		public int lvl2Section = -1; //position of the lvl 2 section
+		public int lvl3Section = -1; //position of the lvl 3 section
+		public int item = -1;        //position of the item
+		public int position = -1;    //the absolute position of the item in the list
+
+		public ItemIndex(int lvl1Section, int lvl2Section, int lvl3Section, int item, int position) {
+			this.lvl1Section = lvl1Section;
+			this.lvl2Section = lvl2Section;
+			this.lvl3Section = lvl3Section;
+			this.item = item;
 			this.position = position;
 		}
 
 		@Override
 		public String toString() {
-			return String.format(Locale.US, "Section: %d, Subsection: %d, SubSubsection: %d, Row: %d, Position: %d",
-					section, row, subsection, subsubsection, position);
+			return String.format(Locale.US, "LVL1 Section: %d, LVL2 Section: %d, LVL3 Section: %d, Item: %d, Position: %d",
+					lvl1Section, item, lvl2Section, lvl3Section, position);
+		}
+
+		/**
+		 * get the type of item this index represents
+		 *
+		 * @return item type
+		 */
+		public ItemType getType() {
+
+			if (item != -1) {
+				if (lvl3Section != -1) {
+					return ItemType.LVL3_ITEM;
+				}
+
+				if (lvl2Section != -1) {
+					return ItemType.LVL2_ITEM;
+				}
+
+				if (lvl1Section != -1) {
+					return ItemType.LVL1_ITEM;
+				}
+
+				return ItemType.LVL0_ITEM;
+			}
+
+			if (lvl3Section != -1) {
+				return ItemType.LVL3_SECTION;
+			}
+
+			if (lvl2Section != -1) {
+				return ItemType.LVL2_SECTION;
+			}
+
+			if (lvl1Section != -1) {
+				return ItemType.LVL1_SECTION;
+			}
+
+			return ItemType.UNDEFINED;
 		}
 	}
 
+	/**
+	 * wrapper method
+	 *
+	 * @param parent
+	 * @param itemType
+	 * @return
+	 */
 	public T onCreateViewHolder(ViewGroup parent, int itemType) {
 
 		return onCreateViewHolderItemType(parent, ItemType.values()[itemType]);
@@ -86,19 +144,19 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	 */
 	public T onCreateViewHolderItemType(ViewGroup parent, ItemType itemType) {
 		switch (itemType) {
-			case SUBSUBSECTIONROW:
+			case LVL3_ITEM:
 				return onCreateSubSubsectionRowViewHolder(parent);
-			case SUBSECTIONROW:
+			case LVL2_ITEM:
 				return onCreateSubsectionRowViewHolder(parent);
-			case SECTIONROW:
+			case LVL1_ITEM:
 				return onCreateSectionRowViewHolder(parent);
-			case NOSECTIONROW:
+			case LVL0_ITEM:
 				return onCreateNoSectionRowViewHolder(parent);
-			case SUBSUBSECTION:
+			case LVL3_SECTION:
 				return onCreateSubSubsectionViewHolder(parent);
-			case SUBSECTION:
+			case LVL2_SECTION:
 				return onCreateSubsectionViewHolder(parent);
-			case SECTION:
+			case LVL1_SECTION:
 				return onCreateSectionViewHolder(parent);
 			default:
 				return null;
@@ -107,7 +165,7 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 	/**
 	 * onCreate Methods
-	 * overwite the methonds to create each viewholder
+	 * overwrite the methods to create each viewholder
 	 **/
 
 	public T onCreateSectionViewHolder(ViewGroup parent) {
@@ -138,6 +196,11 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return null;
 	}
 
+	/**
+	 * sets the default state of the sections when they are created
+	 *
+	 * @param defaultOpenState
+	 */
 	public void setDefaultOpenState(boolean defaultOpenState) {
 		this.defaultOpenState = defaultOpenState;
 	}
@@ -145,28 +208,7 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	@Override
 	public int getItemViewType(int position) {
 
-		ItemIndex index = getItemIndex(position);
-
-		if (index.row != -1) {
-
-			if (index.subsubsection != -1) {
-				return ItemType.SUBSUBSECTIONROW.ordinal();
-			} else if (index.subsection != -1) {
-				return ItemType.SUBSECTIONROW.ordinal();
-			} else if (index.section != -1) {
-				return ItemType.SECTIONROW.ordinal();
-			} else {
-				return ItemType.NOSECTIONROW.ordinal();
-			}
-		} else if (index.subsubsection != -1) {
-			return ItemType.SUBSUBSECTION.ordinal();
-		} else if (index.subsection != -1) {
-			return ItemType.SUBSECTION.ordinal();
-		} else if (index.section != -1) {
-			return ItemType.SECTION.ordinal();
-		}
-
-		return ItemType.UNDEFINED.ordinal();
+		return getItemIndex(position).getType().ordinal();
 	}
 
 	/**
@@ -180,67 +222,73 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return getItemIndex(holder.getLayoutPosition());
 	}
 
-	//TODO: should probably have a more efficient way of calculating this
+	/**
+	 * Calculate the idex of the item based on absolute position
+	 * TODO: should probably have a more efficient way of calculating this
+	 *
+	 * @param position
+	 * @return
+	 */
 	public ItemIndex getItemIndex(int position) {
 		int n = 0;
 
-		int numberOfRowsForNoSection = getNumberOfRowsForNoSection();
-		for (int row = 0; row < numberOfRowsForNoSection; row++) {
+		int numberOfLvl0Items = getNumberOfLvl0Items();
+		for (int item = 0; item < numberOfLvl0Items; item++) {
 			if (position == n) {
 				return new ItemIndex(-1, -1, -1, n, position);
 			}
 			n++;
 		}
 
-		int numberOfSections = getNumberOfSections();
-		for (int section = 0; section < numberOfSections; section++) {
+		int numberOfLvl1Sections = getNumberOfLvl1Sections();
+		for (int lvl1Section = 0; lvl1Section < numberOfLvl1Sections; lvl1Section++) {
 
 			if (position == n) {
-				return new ItemIndex(section, -1, -1, -1, position);
+				return new ItemIndex(lvl1Section, -1, -1, -1, position);
 			}
 
 			n++;
 
-			int numberOfRowsForSection = getNumberOfRowsForSectionS(section);
-			for (int row = 0; row < numberOfRowsForSection; row++) {
+			int numberOfLvl1ItemsForSection = getNumberOfLvl1ItemsForSectionS(lvl1Section);
+			for (int item = 0; item < numberOfLvl1ItemsForSection; item++) {
 
 				if (position == n) {
-					return new ItemIndex(section, -1, -1, row, position);
+					return new ItemIndex(lvl1Section, -1, -1, item, position);
 				}
 				n++;
 			}
 
-			int numberOfSubsectionsForSection = getNumberOfSubsectionsForSectionS(section);
-			for (int subsection = 0; subsection < numberOfSubsectionsForSection; subsection++) {
+			int numberOfLvl2SectionsForSection = getNumberOfLvl2SectionForSectionS(lvl1Section);
+			for (int lvl2Section = 0; lvl2Section < numberOfLvl2SectionsForSection; lvl2Section++) {
 
 				if (position == n) {
-					return new ItemIndex(section, subsection, -1, -1, position);
+					return new ItemIndex(lvl1Section, lvl2Section, -1, -1, position);
 				}
 
 				n++;
 
-				int numberOfRowsForsubsection = getNumberOfRowsForSubsectionS(section, subsection);
-				for (int row = 0; row < numberOfRowsForsubsection; row++) {
+				int numberOfLvl2ItemsForSection = getNumberOfLvl2ItemForSectionS(lvl1Section, lvl2Section);
+				for (int item = 0; item < numberOfLvl2ItemsForSection; item++) {
 
 					if (position == n) {
-						return new ItemIndex(section, subsection, -1, row, position);
+						return new ItemIndex(lvl1Section, lvl2Section, -1, item, position);
 					}
 					n++;
 				}
 
-				int numberOfSubsectionForSubsection = getNumberOfSubsectionsForSubsectionS(section, subsection);
-				for (int subsubsection = 0; subsubsection < numberOfSubsectionForSubsection; subsubsection++) {
+				int numberOfLvl3SectionsForSection = getNumberOfLvl3SectionsForSectionS(lvl1Section, lvl2Section);
+				for (int lvl3Section = 0; lvl3Section < numberOfLvl3SectionsForSection; lvl3Section++) {
 					if (position == n) {
-						return new ItemIndex(section, subsection, subsubsection, -1, position);
+						return new ItemIndex(lvl1Section, lvl2Section, lvl3Section, -1, position);
 					}
 
 					n++;
 
-					int numberOfRowsForSubSubsection = getNumberOfRowsForSubSubsectionS(section, subsection, subsubsection);
-					for (int row = 0; row < numberOfRowsForSubSubsection; row++) {
+					int numberOfLvl3ItemsForSection = getNumberOfLvl3ItemsForSectionS(lvl1Section, lvl2Section, lvl3Section);
+					for (int item = 0; item < numberOfLvl3ItemsForSection; item++) {
 
 						if (position == n) {
-							return new ItemIndex(section, subsection, subsubsection, row, position);
+							return new ItemIndex(lvl1Section, lvl2Section, lvl3Section, item, position);
 						}
 						n++;
 					}
@@ -249,6 +297,23 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		}
 
 		return new ItemIndex(-1, -1, -1, -1, position);
+	}
+
+	public ArrayList<ItemIndex> getItemIndices(ItemType type) {
+
+		ArrayList<ItemIndex> list = new ArrayList<>();
+
+		int itemCount = getItemCount();
+		for (int i = 0; i < itemCount; i++) {
+
+			ItemIndex itemIndex = getItemIndex(i);
+
+			if (type == itemIndex.getType()) {
+				list.add(itemIndex);
+			}
+		}
+
+		return list;
 	}
 
 	/**
@@ -261,56 +326,13 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 
 		AllItemIndexes allItemIndexes = new AllItemIndexes();
 
-		int n = 0;
-
-		int numberOfRowsForNoSection = getNumberOfRowsForNoSection();
-		for (int row = 0; row < numberOfRowsForNoSection; row++) {
-
-			allItemIndexes.noSectionRowItemIndices.add(new ItemIndex(-1, -1, -1, row, n));
-			n++;
-		}
-
-		int numberOfSections = getNumberOfSections();
-		for (int section = 0; section < numberOfSections; section++) {
-
-			allItemIndexes.sectionItemIndices.add(new ItemIndex(section, -1, -1, -1, n));
-			n++;
-
-			int numberOfRowsForSection = getNumberOfRowsForSectionS(section);
-			for (int row = 0; row < numberOfRowsForSection; row++) {
-
-				allItemIndexes.sectionRowItemIndices.add(new ItemIndex(section, -1, -1, row, n));
-				n++;
-			}
-
-			int numberOfSubsectionsForSection = getNumberOfSubsectionsForSectionS(section);
-			for (int subsection = 0; subsection < numberOfSubsectionsForSection; subsection++) {
-
-				allItemIndexes.subSectionItemIndices.add(new ItemIndex(section, subsection, -1, -1, n));
-				n++;
-
-				int numberOfRowsForsubsection = getNumberOfRowsForSubsectionS(section, subsection);
-				for (int row = 0; row < numberOfRowsForsubsection; row++) {
-
-					allItemIndexes.subSectionRowItemIdices.add(new ItemIndex(section, subsection, -1, row, n));
-					n++;
-				}
-
-				int numberOfSubsectionForSubsection = getNumberOfSubsectionsForSubsectionS(section, subsection);
-				for (int subsubsection = 0; subsubsection < numberOfSubsectionForSubsection; subsubsection++) {
-
-					allItemIndexes.subSubSectionItemIndices.add(new ItemIndex(section, subsection, subsubsection, -1, n));
-					n++;
-
-					int numberOfRowsForSubSubsection = getNumberOfRowsForSubSubsectionS(section, subsection, subsubsection);
-					for (int row = 0; row < numberOfRowsForSubSubsection; row++) {
-
-						allItemIndexes.subSubSectionRowItemIndices.add(new ItemIndex(section, subsection, subsubsection, row, n));
-						n++;
-					}
-				}
-			}
-		}
+		allItemIndexes.lvl3Items = getItemIndices(ItemType.LVL3_ITEM);
+		allItemIndexes.lvl2Items = getItemIndices(ItemType.LVL2_ITEM);
+		allItemIndexes.lvl1Items = getItemIndices(ItemType.LVL1_ITEM);
+		allItemIndexes.lvl0Items = getItemIndices(ItemType.LVL0_ITEM);
+		allItemIndexes.lvl3Sections = getItemIndices(ItemType.LVL3_SECTION);
+		allItemIndexes.lvl2Sections = getItemIndices(ItemType.LVL2_SECTION);
+		allItemIndexes.lvl1Sections = getItemIndices(ItemType.LVL1_SECTION);
 
 		return allItemIndexes;
 	}
@@ -326,24 +348,24 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	 */
 	public void onBindViewHolderItemType(T holder, ItemIndex index, ItemType itemType) {
 		switch (itemType) {
-			case SUBSUBSECTIONROW:
+			case LVL3_ITEM:
 				onBindSubSubsectionRow(holder, index);
 				break;
-			case SUBSECTIONROW:
+			case LVL2_ITEM:
 				onBindSubsectionRow(holder, index);
 				break;
-			case SECTIONROW:
+			case LVL1_ITEM:
 				onBindSectionRow(holder, index);
 				break;
-			case NOSECTIONROW:
+			case LVL0_ITEM:
 				onBindNoSectionRow(holder, index);
 				break;
-			case SUBSUBSECTION:
+			case LVL3_SECTION:
 				onBindSubsubsection(holder, index);
 				break;
-			case SUBSECTION:
+			case LVL2_SECTION:
 				onBindSubsection(holder, index);
-			case SECTION:
+			case LVL1_SECTION:
 				onBindSection(holder, index);
 		}
 	}
@@ -357,9 +379,8 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	public void onBindViewHolder(T holder, int position) {
 
 		ItemIndex index = getItemIndex(position);
-		ItemType itemType = ItemType.values()[getItemViewType(position)];
 
-		onBindViewHolderItemType(holder, index, itemType);
+		onBindViewHolderItemType(holder, index, index.getType());
 	}
 
 	public void onBindSection(T holder, ItemIndex index) {
@@ -386,25 +407,25 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	@Override
 	public int getItemCount() {
 
-		int n = getNumberOfRowsForNoSection();
+		int n = getNumberOfLvl0Items();
 
-		int numberOfSections = getNumberOfSections();
-		n += numberOfSections;
-		for (int section = 0; section < numberOfSections; section++) {
+		int numberOfLvl1Sections = getNumberOfLvl1Sections();
+		n += numberOfLvl1Sections;
+		for (int lvl1Section = 0; lvl1Section < numberOfLvl1Sections; lvl1Section++) {
 
-			n += getNumberOfRowsForSectionS(section);
+			n += getNumberOfLvl1ItemsForSectionS(lvl1Section);
 
-			int numberOfSubsectionForSection = getNumberOfSubsectionsForSectionS(section);
-			n += numberOfSubsectionForSection;
-			for (int subsection = 0; subsection < numberOfSubsectionForSection; subsection++) {
+			int numberOfLvl2SectionForSection = getNumberOfLvl2SectionForSectionS(lvl1Section);
+			n += numberOfLvl2SectionForSection;
+			for (int lvl2Section = 0; lvl2Section < numberOfLvl2SectionForSection; lvl2Section++) {
 
-				n += getNumberOfRowsForSubsectionS(section, subsection);
+				n += getNumberOfLvl2ItemForSectionS(lvl1Section, lvl2Section);
 
-				int numberOfSubsectionsForSubsection = getNumberOfSubsectionsForSubsectionS(section, subsection);
-				n += numberOfSubsectionsForSubsection;
-				for (int subsubsection = 0; subsubsection < numberOfSubsectionsForSubsection; subsubsection++) {
+				int numberOfLvl3SectionsForSection = getNumberOfLvl3SectionsForSectionS(lvl1Section, lvl2Section);
+				n += numberOfLvl3SectionsForSection;
+				for (int lvl3Section = 0; lvl3Section < numberOfLvl3SectionsForSection; lvl3Section++) {
 
-					n += getNumberOfRowsForSubSubsectionS(section, subsection, subsubsection);
+					n += getNumberOfLvl3ItemsForSectionS(lvl1Section, lvl2Section, lvl3Section);
 				}
 			}
 		}
@@ -412,262 +433,262 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return n;
 	}
 
-	public boolean isSectionOpen(int section) {
+	public boolean isLvl1SectionOpened(int lvl1Section) {
 
-		String key = getSectionKey(section);
+		String key = getLvl1SectionKey(lvl1Section);
 
-		Boolean open = sectionOpened.get(key);
+		Boolean open = lvl1SectionOpened.get(key);
 
 		if (open != null) {
 			return open;
 		} else {
-			sectionOpened.put(key, defaultOpenState);
+			lvl1SectionOpened.put(key, defaultOpenState);
 			return defaultOpenState;
 		}
 	}
 
-	public void openCloseSection(ItemIndex index) {
+	public void openCloseLvl1Section(ItemIndex index) {
 
-		if (!isSectionOpen(index.section)) {
-			openSection(index);
+		if (!isLvl1SectionOpened(index.lvl1Section)) {
+			openLvl1Section(index);
 		} else {
-			closeSection(index);
+			closeLvl1Section(index);
 		}
 	}
 
-	public void openCloseSection(ItemIndex index, boolean open) {
+	public void openCloseLvl1Section(ItemIndex index, boolean open) {
 
-		if (!open) {
-			openSection(index);
+		if (open) {
+			openLvl1Section(index);
 		} else {
-			closeSection(index);
+			closeLvl1Section(index);
 		}
 	}
 
-	private void openSection(ItemIndex index) {
+	private void openLvl1Section(ItemIndex index) {
 
-		sectionOpened.put(getSectionKey(index.section), true);
+		lvl1SectionOpened.put(getLvl1SectionKey(index.lvl1Section), true);
 
-		int n = getNumberOfSubsectionsForSection(index.section);
+		int n = getNumberOfLvl2SectionsForSection(index.lvl1Section);
 
 		for (int i = 0; i < n; i++) {
-			subsectionOpened.put(getSubsectionKey(index.section, index.subsection), false);
+			lvl2SectionOpened.put(getLvl2SectionKey(index.lvl1Section, index.lvl2Section), false);
 		}
 
-		notifyItemRangeInserted(index.position + 1, getNumberOfRowsForSection(index.section) + n);
+		notifyItemRangeInserted(index.position + 1, getNumberOfLvl1ItemsForSection(index.lvl1Section) + n);
 	}
 
-	private void closeSection(ItemIndex index) {
+	private void closeLvl1Section(ItemIndex index) {
 
-		sectionOpened.put(getSectionKey(index.section), false);
+		lvl1SectionOpened.put(getLvl1SectionKey(index.lvl1Section), false);
 
-		int numberOfSubsectionsForSection = getNumberOfSubsectionsForSection(index.section);
+		int numberOfLvl2SectionsForSection = getNumberOfLvl2SectionsForSection(index.lvl1Section);
 
 		int everythingOpen = 0;
-		for (int i = 0; i < numberOfSubsectionsForSection; i++) {
+		for (int i = 0; i < numberOfLvl2SectionsForSection; i++) {
 
-			String key = getSubsectionKey(index.section, i);
+			String key = getLvl2SectionKey(index.lvl1Section, i);
 
-			if (subsectionOpened.get(key)) {
-				everythingOpen += getNumberOfRowsForSubsection(index.section, i);
+			if (isLvl2SectionOpened(index.lvl1Section, i)) {
+				everythingOpen += getNumberOfLvl2ItemsForSection(index.lvl1Section, i);
 
-				int numberOfSubsectionsForSubsection = getNumberOfSubsectionsForSubsection(index.section, i);
+				int numberOfLvl3SectionsForSection = getNumberOfLvl3SectionsForSection(index.lvl1Section, i);
 
-				for (int j = 0; j < numberOfSubsectionsForSubsection; j++) {
+				for (int j = 0; j < numberOfLvl3SectionsForSection; j++) {
 
-					String keyS = getSubSubsectionKey(index.section, i, j);
-					if (subSubsectionOpened.get(keyS)) {
-						everythingOpen += getNumberOfRowsForSubSubsection(index.section, i, j);
+					String keyS = getLvl3SectionKey(index.lvl1Section, i, j);
+					if (isLvl3SectionOpened(index.lvl1Section, i, j)) {
+						everythingOpen += getNumberOfLvl3ItemsForSection(index.lvl1Section, i, j);
 					}
-					subSubsectionOpened.put(keyS, false);
+					lvl3SectionOpened.put(keyS, false);
 				}
 
-				everythingOpen += numberOfSubsectionsForSubsection;
+				everythingOpen += numberOfLvl3SectionsForSection;
 			}
-			subsectionOpened.put(key, false);
+			lvl2SectionOpened.put(key, false);
 		}
 
-		int numberOfRowsForSection = getNumberOfRowsForSection(index.section);
+		int numberOfLvl1ItemsForSection = getNumberOfLvl1ItemsForSection(index.lvl1Section);
 
 		notifyItemRangeRemoved(index.position + 1,
-				numberOfRowsForSection + numberOfSubsectionsForSection + everythingOpen);
+				numberOfLvl1ItemsForSection + numberOfLvl2SectionsForSection + everythingOpen);
 	}
 
-	public boolean isSubSectionOpen(int section, int subSection) {
+	public boolean isLvl2SectionOpened(int lvl1Section, int lvl2Section) {
 
-		String key = getSubsectionKey(section, subSection);
+		String key = getLvl2SectionKey(lvl1Section, lvl2Section);
 
-		Boolean open = subsectionOpened.get(key);
+		Boolean open = lvl2SectionOpened.get(key);
 
 		if (open != null) {
 			return open;
 		} else {
-			subsectionOpened.put(key, defaultOpenState);
+			lvl2SectionOpened.put(key, defaultOpenState);
 			return defaultOpenState;
 		}
 	}
 
-	public void openCloseSubsection(ItemIndex index) {
+	public void openCloseLvl2Section(ItemIndex index) {
 
-		if (!isSubSectionOpen(index.section, index.subsection)) {
-			openSubsection(index);
+		if (!isLvl2SectionOpened(index.lvl1Section, index.lvl2Section)) {
+			openLvl2Section(index);
 		} else {
-			closeSubsection(index);
+			closeLvl2Section(index);
 		}
 	}
 
-	public void openCloseSubsection(ItemIndex index, boolean open) {
+	public void openCloseLvl2Section(ItemIndex index, boolean open) {
 
-		if (!open) {
-			openSubsection(index);
+		if (open) {
+			openLvl2Section(index);
 		} else {
-			closeSubsection(index);
+			closeLvl2Section(index);
 		}
 	}
 
-	private void openSubsection(ItemIndex index) {
+	private void openLvl2Section(ItemIndex index) {
 
-		subsectionOpened.put(getSubsectionKey(index.section, index.subsection), true);
+		lvl2SectionOpened.put(getLvl2SectionKey(index.lvl1Section, index.lvl2Section), true);
 
-		int numberOfSubsectionsForSubsection = getNumberOfSubsectionsForSubsection(index.section, index.subsection);
+		int numberOfLvl3SectionsForSection = getNumberOfLvl3SectionsForSection(index.lvl1Section, index.lvl2Section);
 
-		for (int i = 0; i < numberOfSubsectionsForSubsection; i++) {
-			subSubsectionOpened.put(getSubSubsectionKey(index.section, index.subsection, i), false);
+		for (int i = 0; i < numberOfLvl3SectionsForSection; i++) {
+			lvl3SectionOpened.put(getLvl3SectionKey(index.lvl1Section, index.lvl2Section, i), false);
 		}
 
-		int numberOfRowsForSubsection = getNumberOfRowsForSubsection(index.section, index.subsection);
+		int numberOfLvl2ItemsForSection = getNumberOfLvl2ItemsForSection(index.lvl1Section, index.lvl2Section);
 
-		notifyItemRangeInserted(index.position + 1, numberOfRowsForSubsection + numberOfSubsectionsForSubsection);
+		notifyItemRangeInserted(index.position + 1, numberOfLvl2ItemsForSection + numberOfLvl3SectionsForSection);
 	}
 
-	private void closeSubsection(ItemIndex index) {
+	private void closeLvl2Section(ItemIndex index) {
 
-		subsectionOpened.put(getSubsectionKey(index.section, index.subsection), false);
+		lvl2SectionOpened.put(getLvl2SectionKey(index.lvl1Section, index.lvl2Section), false);
 
-		int numberOfSubsectionForSubsection = getNumberOfSubsectionsForSubsection(index.section, index.subsection);
+		int numberOfLvl3SectionsForSection = getNumberOfLvl3SectionsForSection(index.lvl1Section, index.lvl2Section);
 
 		int subsectionRows = 0;
-		for (int i = 0; i < numberOfSubsectionForSubsection; i++) {
+		for (int i = 0; i < numberOfLvl3SectionsForSection; i++) {
 
-			String key = getSubSubsectionKey(index.section, index.subsection, i);
+			String key = getLvl3SectionKey(index.lvl1Section, index.lvl2Section, i);
 
-			if (subSubsectionOpened.get(key)) {
-				subsectionRows += getNumberOfRowsForSubSubsection(index.section, index.subsection, i);
+			if (isLvl3SectionOpened(index.lvl1Section, index.lvl2Section, i)) {
+				subsectionRows += getNumberOfLvl3ItemsForSection(index.lvl1Section, index.lvl2Section, i);
 			}
-			subSubsectionOpened.put(key, false);
+			lvl3SectionOpened.put(key, false);
 		}
 
-		int numberOfRowsForSubsection = getNumberOfRowsForSubsection(index.section, index.subsection);
+		int numberOfLvl2ItemsForSection = getNumberOfLvl2ItemsForSection(index.lvl1Section, index.lvl2Section);
 
 		notifyItemRangeRemoved(index.position + 1,
-				numberOfRowsForSubsection + numberOfSubsectionForSubsection + subsectionRows);
+				numberOfLvl2ItemsForSection + numberOfLvl3SectionsForSection + subsectionRows);
 	}
 
-	public boolean isSubSubsectionOpen(int section, int subSection, int subSubsection) {
+	public boolean isLvl3SectionOpened(int lvl1Section, int lvl2Section, int lvl3Section) {
 
-		String key = getSubSubsectionKey(section, subSection, subSubsection);
+		String key = getLvl3SectionKey(lvl1Section, lvl2Section, lvl3Section);
 
-		Boolean open = subSubsectionOpened.get(key);
+		Boolean open = lvl3SectionOpened.get(key);
 
 		if (open != null) {
 			return open;
 		} else {
-			subSubsectionOpened.put(key, defaultOpenState);
+			lvl3SectionOpened.put(key, defaultOpenState);
 			return defaultOpenState;
 		}
 	}
 
-	public void openCloseSubSubsection(ItemIndex index) {
+	public void openCloseLvl3Section(ItemIndex index) {
 
-		if (!isSubSubsectionOpen(index.section, index.subsection, index.subsubsection)) {
-			openSubSubsection(index);
+		if (!isLvl3SectionOpened(index.lvl1Section, index.lvl2Section, index.lvl3Section)) {
+			openLvl3Section(index);
 		} else {
-			closeSubSubsection(index);
+			closeLvl3Section(index);
 		}
 	}
 
-	public void openCloseSubSubsection(ItemIndex index, boolean open) {
+	public void openCloseLvl3Section(ItemIndex index, boolean open) {
 
-		if (!open) {
-			openSubSubsection(index);
+		if (open) {
+			openLvl3Section(index);
 		} else {
-			closeSubSubsection(index);
+			closeLvl3Section(index);
 		}
 	}
 
-	private void openSubSubsection(ItemIndex index) {
+	private void openLvl3Section(ItemIndex index) {
 
-		subSubsectionOpened.put(getSubSubsectionKey(index.section, index.subsection, index.subsubsection), true);
+		lvl3SectionOpened.put(getLvl3SectionKey(index.lvl1Section, index.lvl2Section, index.lvl3Section), true);
 
-		notifyItemRangeInserted(index.position + 1, getNumberOfRowsForSubSubsection(index.section, index.subsection, index.subsubsection));
+		notifyItemRangeInserted(index.position + 1, getNumberOfLvl3ItemsForSection(index.lvl1Section, index.lvl2Section, index.lvl3Section));
 	}
 
-	private void closeSubSubsection(ItemIndex index) {
+	private void closeLvl3Section(ItemIndex index) {
 
-		subSubsectionOpened.put(getSubSubsectionKey(index.section, index.subsection, index.subsubsection), false);
+		lvl3SectionOpened.put(getLvl3SectionKey(index.lvl1Section, index.lvl2Section, index.lvl3Section), false);
 
-		notifyItemRangeRemoved(index.position + 1, getNumberOfRowsForSubSubsection(index.section, index.subsection, index.subsubsection));
+		notifyItemRangeRemoved(index.position + 1, getNumberOfLvl3ItemsForSection(index.lvl1Section, index.lvl2Section, index.lvl3Section));
 	}
 
-	private String getSectionKey(int section) {
+	private String getLvl1SectionKey(int section) {
 		return String.format(Locale.US, "%d", section);
 	}
 
-	private String getSubsectionKey(int section, int subsection) {
+	private String getLvl2SectionKey(int section, int subsection) {
 		return String.format(Locale.US, "%d%d", section, subsection);
 	}
 
-	private String getSubSubsectionKey(int section, int subsection, int subSubsection) {
+	private String getLvl3SectionKey(int section, int subsection, int subSubsection) {
 		return String.format(Locale.US, "%d%d%d", section, subsection, subSubsection);
 	}
 
-	private int getNumberOfSubsectionsForSectionS(int section) {
-		return isSectionOpen(section) ? getNumberOfSubsectionsForSection(section) : 0;
+	private int getNumberOfLvl2SectionForSectionS(int section) {
+		return isLvl1SectionOpened(section) ? getNumberOfLvl2SectionsForSection(section) : 0;
 	}
 
-	private int getNumberOfSubsectionsForSubsectionS(int section, int subsection) {
-		return isSectionOpen(section) && isSubSectionOpen(section, subsection) ?
-				getNumberOfSubsectionsForSubsection(section, subsection) : 0;
+	private int getNumberOfLvl3SectionsForSectionS(int section, int subsection) {
+		return isLvl1SectionOpened(section) && isLvl2SectionOpened(section, subsection) ?
+				getNumberOfLvl3SectionsForSection(section, subsection) : 0;
 	}
 
-	private int getNumberOfRowsForSectionS(int section) {
-		return isSectionOpen(section) ? getNumberOfRowsForSection(section) : 0;
+	private int getNumberOfLvl1ItemsForSectionS(int section) {
+		return isLvl1SectionOpened(section) ? getNumberOfLvl1ItemsForSection(section) : 0;
 	}
 
-	private int getNumberOfRowsForSubsectionS(int section, int subsection) {
-		return isSectionOpen(section) && isSubSectionOpen(section, subsection) ? getNumberOfRowsForSubsection(section, subsection) : 0;
+	private int getNumberOfLvl2ItemForSectionS(int section, int subsection) {
+		return isLvl1SectionOpened(section) && isLvl2SectionOpened(section, subsection) ? getNumberOfLvl2ItemsForSection(section, subsection) : 0;
 	}
 
-	private int getNumberOfRowsForSubSubsectionS(int section, int subsection, int subSubsection) {
-		return isSectionOpen(section) && isSubSectionOpen(section, subsection) && isSubSubsectionOpen(section, subsection, subSubsection) ?
-				getNumberOfRowsForSubSubsection(section, subsection, subSubsection) : 0;
+	private int getNumberOfLvl3ItemsForSectionS(int section, int subsection, int subSubsection) {
+		return isLvl1SectionOpened(section) && isLvl2SectionOpened(section, subsection) && isLvl3SectionOpened(section, subsection, subSubsection) ?
+				getNumberOfLvl3ItemsForSection(section, subsection, subSubsection) : 0;
 	}
 
-	public int getNumberOfSubsectionsForSection(int section) {
+	public int getNumberOfLvl2SectionsForSection(int section) {
 		return 0;
 	}
 
-	public int getNumberOfSections() {
+	public int getNumberOfLvl1Sections() {
 		return 0;
 	}
 
-	public int getNumberOfSubsectionsForSubsection(int section, int subsection) {
+	public int getNumberOfLvl3SectionsForSection(int section, int subsection) {
 		return 0;
 	}
 
-	public int getNumberOfRowsForSection(int section) {
+	public int getNumberOfLvl1ItemsForSection(int section) {
 		return 0;
 	}
 
-	public int getNumberOfRowsForSubsection(int section, int subsection) {
+	public int getNumberOfLvl2ItemsForSection(int section, int subsection) {
 		return 0;
 	}
 
-	public int getNumberOfRowsForSubSubsection(int section, int subsection, int subSubsection) {
+	public int getNumberOfLvl3ItemsForSection(int section, int subsection, int subSubsection) {
 		return 0;
 	}
 
-	public int getNumberOfRowsForNoSection() {
+	public int getNumberOfLvl0Items() {
 		return 0;
 	}
 
@@ -675,61 +696,69 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	 * custom function to close all
 	 * this should be called before setting your new dataset and before calling notifyDataset
 	 * closes all sections to prevent weird behavior
+	 * REALLY FUCKING SLOW
 	 */
 	public void closeAll() {
-		AllItemIndexes allItemIndexes = getAllItemIndices();
 
 		//close all sections first then reset data
 		//this prevents weird behaviour when the dataset is vastly different from the
 		//current one
 
-		for (ItemIndex itemIndex : allItemIndexes.subSubSectionItemIndices) {
-			openCloseSubSubsection(itemIndex, false);
+		ArrayList<ItemIndex> lvl3Sections = getItemIndices(ItemType.LVL3_SECTION);
+
+		for (ItemIndex itemIndex : lvl3Sections) {
+			openCloseLvl3Section(itemIndex, false);
 		}
 
-		for (ItemIndex itemIndex : allItemIndexes.subSectionItemIndices) {
-			openCloseSubsection(itemIndex, false);
+		ArrayList<ItemIndex> lvl2Sections = getItemIndices(ItemType.LVL2_SECTION);
+
+		for (ItemIndex itemIndex : lvl2Sections) {
+			openCloseLvl2Section(itemIndex, false);
 		}
 
-		for (ItemIndex itemIndex : allItemIndexes.sectionItemIndices) {
-			openCloseSection(itemIndex, false);
-		}
+		ArrayList<ItemIndex> lvl1Sections = getItemIndices(ItemType.LVL1_SECTION);
 
-		notifyDataSetChanged();
+		for (ItemIndex itemIndex : lvl1Sections) {
+			openCloseLvl1Section(itemIndex, false);
+		}
 	}
 
 	/**
 	 * custom function to open all
+	 * REALLY FUCKING SLOW
 	 */
 	public void openAll() {
-		AllItemIndexes allItemIndexes = getAllItemIndices();
 
-		//close all sections first then reset data
-		//this prevents weird behaviour when the dataset is vastly different from the
-		//current one
+		ArrayList<ItemIndex> lvl1Sections = getItemIndices(ItemType.LVL1_SECTION);
 
-		for (ItemIndex itemIndex : allItemIndexes.sectionItemIndices) {
-			openCloseSection(itemIndex, true);
+		for (ItemIndex itemIndex : lvl1Sections) {
+			openCloseLvl1Section(itemIndex, true);
 		}
 
-		for (ItemIndex itemIndex : allItemIndexes.subSectionItemIndices) {
-			openCloseSubsection(itemIndex, true);
+		ArrayList<ItemIndex> lvl2Sections = getItemIndices(ItemType.LVL2_SECTION);
+
+		for (ItemIndex itemIndex : lvl2Sections) {
+			openCloseLvl2Section(itemIndex, true);
 		}
 
-		for (ItemIndex itemIndex : allItemIndexes.subSubSectionItemIndices) {
-			openCloseSubSubsection(itemIndex, true);
-		}
+		ArrayList<ItemIndex> lvl3Sections = getItemIndices(ItemType.LVL3_SECTION);
 
-		notifyDataSetChanged();
+		for (ItemIndex itemIndex : lvl3Sections) {
+			openCloseLvl3Section(itemIndex, true);
+		}
 	}
 
+	/**
+	 * object use to represent all indices in a given list
+	 */
 	public static class AllItemIndexes {
-		public ArrayList<ItemIndex> noSectionRowItemIndices = new ArrayList<>();
-		public ArrayList<ItemIndex> sectionItemIndices = new ArrayList<>();
-		public ArrayList<ItemIndex> sectionRowItemIndices = new ArrayList<>();
-		public ArrayList<ItemIndex> subSectionItemIndices = new ArrayList<>();
-		public ArrayList<ItemIndex> subSectionRowItemIdices = new ArrayList<>();
-		public ArrayList<ItemIndex> subSubSectionItemIndices = new ArrayList<>();
-		public ArrayList<ItemIndex> subSubSectionRowItemIndices = new ArrayList<>();
+		public ArrayList<ItemIndex> lvl0Items = new ArrayList<>();
+		public ArrayList<ItemIndex> lvl1Items = new ArrayList<>();
+		public ArrayList<ItemIndex> lvl2Items = new ArrayList<>();
+		public ArrayList<ItemIndex> lvl3Items = new ArrayList<>();
+
+		public ArrayList<ItemIndex> lvl1Sections = new ArrayList<>();
+		public ArrayList<ItemIndex> lvl2Sections = new ArrayList<>();
+		public ArrayList<ItemIndex> lvl3Sections = new ArrayList<>();
 	}
 }
