@@ -128,29 +128,29 @@ public class MainActivity extends AppCompatActivity {
 			return bucket.itemList.size();
 		}
 
-		public class NoSectionItemViewHolder extends ViewHolder {
+		public class Lvl0ItemViewHolder extends ViewHolder {
 
-			public NoSectionItemViewHolder(View itemView) {
+			public Lvl0ItemViewHolder(View itemView) {
 				super(itemView);
 			}
 		}
 
 		@Override
-		public ViewHolder onCreateNoSectionRowViewHolder(ViewGroup parent) {
-			return new NoSectionItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl0ItemViewHolder(ViewGroup parent) {
+			return new Lvl0ItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindNoSectionRow(ViewHolder holder, ItemIndex index) {
-			if (holder instanceof NoSectionItemViewHolder) {
+		public void onBindLvl0Item(ViewHolder holder, ItemIndex index) {
+			if (holder instanceof Lvl0ItemViewHolder) {
 
-				NoSectionItemViewHolder noSectionItemViewHolder = (NoSectionItemViewHolder) holder;
+				Lvl0ItemViewHolder lvl0ItemViewHolder = (Lvl0ItemViewHolder) holder;
 
 				String title = bucket
 						.itemList
 						.get(index.item);
 
-				noSectionItemViewHolder.title.setText(title);
+				lvl0ItemViewHolder.title.setText(title);
 			}
 		}
 
@@ -163,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
 			return bucket.bucketList.size();
 		}
 
-		public class SectionViewHolder extends ViewHolder {
+		public class Lv1SectionViewHolder extends ViewHolder {
 
-			public SectionViewHolder(View itemView) {
+			public Lv1SectionViewHolder(View itemView) {
 				super(itemView);
 
 				itemView.setBackgroundResource(R.color.section);
@@ -181,33 +181,33 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		@Override
-		public ViewHolder onCreateSectionViewHolder(ViewGroup parent) {
-			return new SectionViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl1SectionViewHolder(ViewGroup parent) {
+			return new Lv1SectionViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindSection(ViewHolder holder, final ItemIndex index) {
-			if (holder instanceof SectionViewHolder) {
+		public void onBindLvl1Section(ViewHolder holder, final ItemIndex index) {
+			if (holder instanceof Lv1SectionViewHolder) {
 
-				final SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
+				final Lv1SectionViewHolder lv1SectionViewHolder = (Lv1SectionViewHolder) holder;
 
 				String title = bucket
 						.bucketList
 						.get(index.lvl1Section)
 						.name;
 
-				sectionViewHolder.title.setText(title);
+				lv1SectionViewHolder.title.setText(title);
 
-				sectionViewHolder.icon1.setVisibility(View.VISIBLE);
-				sectionViewHolder.expand.setVisibility(View.VISIBLE);
+				lv1SectionViewHolder.icon1.setVisibility(View.VISIBLE);
+				lv1SectionViewHolder.expand.setVisibility(View.VISIBLE);
 
-				sectionViewHolder.setOpen(index);
+				lv1SectionViewHolder.setOpen(index);
 
-				sectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+				lv1SectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
 						openCloseLvl1Section(index);
-						sectionViewHolder.setOpen(index);
+						lv1SectionViewHolder.setOpen(index);
 					}
 				});
 			}
@@ -218,28 +218,28 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfLvl1ItemsForSection(int section) {
-			return bucket.bucketList.get(section)
+		public int getNumberOfLvl1ItemsForSection(int lvl1Section) {
+			return bucket.bucketList.get(lvl1Section)
 					.itemList.size();
 		}
 
-		public class SectionItemViewHolder extends ViewHolder {
+		public class Lvl1ItemViewHolder extends ViewHolder {
 
-			public SectionItemViewHolder(View itemView) {
+			public Lvl1ItemViewHolder(View itemView) {
 				super(itemView);
 			}
 		}
 
 		@Override
-		public ViewHolder onCreateSectionRowViewHolder(ViewGroup parent) {
-			return new SectionItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl1ItemViewHolder(ViewGroup parent) {
+			return new Lvl1ItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindSectionRow(ViewHolder holder, ItemIndex index) {
-			if (holder instanceof SectionItemViewHolder) {
+		public void onBindLvl1Item(ViewHolder holder, ItemIndex index) {
+			if (holder instanceof Lvl1ItemViewHolder) {
 
-				SectionItemViewHolder sectionItemViewHolder = (SectionItemViewHolder) holder;
+				Lvl1ItemViewHolder lvl1ItemViewHolder = (Lvl1ItemViewHolder) holder;
 
 				String title = bucket
 						.bucketList
@@ -247,9 +247,9 @@ public class MainActivity extends AppCompatActivity {
 						.itemList
 						.get(index.item);
 
-				sectionItemViewHolder.icon1.setVisibility(View.VISIBLE);
+				lvl1ItemViewHolder.icon1.setVisibility(View.VISIBLE);
 
-				sectionItemViewHolder.title.setText(title);
+				lvl1ItemViewHolder.title.setText(title);
 			}
 		}
 
@@ -263,9 +263,9 @@ public class MainActivity extends AppCompatActivity {
 					.bucketList.size();
 		}
 
-		public class SubsectionViewHolder extends ViewHolder {
+		public class Lvl2SectionViewHolder extends ViewHolder {
 
-			public SubsectionViewHolder(View itemView) {
+			public Lvl2SectionViewHolder(View itemView) {
 				super(itemView);
 
 				itemView.setBackgroundResource(R.color.subsection);
@@ -281,15 +281,15 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		@Override
-		public ViewHolder onCreateSubsectionViewHolder(ViewGroup parent) {
-			return new SubsectionViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl2SectionViewHolder(ViewGroup parent) {
+			return new Lvl2SectionViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindSubsection(ViewHolder holder, final ItemIndex index) {
-			if (holder instanceof SubsectionViewHolder) {
+		public void onBindLvl2Section(ViewHolder holder, final ItemIndex index) {
+			if (holder instanceof Lvl2SectionViewHolder) {
 
-				final SubsectionViewHolder subsectionViewHolder = (SubsectionViewHolder) holder;
+				final Lvl2SectionViewHolder lvl2SectionViewHolder = (Lvl2SectionViewHolder) holder;
 
 				String title = bucket
 						.bucketList
@@ -298,19 +298,19 @@ public class MainActivity extends AppCompatActivity {
 						.get(index.lvl2Section)
 						.name;
 
-				subsectionViewHolder.title.setText(title);
+				lvl2SectionViewHolder.title.setText(title);
 
-				subsectionViewHolder.icon1.setVisibility(View.VISIBLE);
-				subsectionViewHolder.icon2.setVisibility(View.VISIBLE);
-				subsectionViewHolder.expand.setVisibility(View.VISIBLE);
+				lvl2SectionViewHolder.icon1.setVisibility(View.VISIBLE);
+				lvl2SectionViewHolder.icon2.setVisibility(View.VISIBLE);
+				lvl2SectionViewHolder.expand.setVisibility(View.VISIBLE);
 
-				subsectionViewHolder.setOpen(index);
+				lvl2SectionViewHolder.setOpen(index);
 
-				subsectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+				lvl2SectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
 						openCloseLvl2Section(index);
-						subsectionViewHolder.setOpen(index);
+						lvl2SectionViewHolder.setOpen(index);
 					}
 				});
 			}
@@ -321,29 +321,29 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfLvl2ItemsForSection(int section, int subsection) {
-			return bucket.bucketList.get(section)
-					.bucketList.get(subsection)
+		public int getNumberOfLvl2ItemsForSection(int lvl1Section, int lvl2Section) {
+			return bucket.bucketList.get(lvl1Section)
+					.bucketList.get(lvl2Section)
 					.itemList.size();
 		}
 
-		public class SubsectionItemViewHolder extends ViewHolder {
+		public class Lvl2ItemViewHolder extends ViewHolder {
 
-			public SubsectionItemViewHolder(View itemView) {
+			public Lvl2ItemViewHolder(View itemView) {
 				super(itemView);
 			}
 		}
 
 		@Override
-		public ViewHolder onCreateSubsectionRowViewHolder(ViewGroup parent) {
-			return new SubsectionItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl2ItemViewHolder(ViewGroup parent) {
+			return new Lvl2ItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindSubsectionRow(ViewHolder holder, ItemIndex index) {
-			if (holder instanceof SubsectionItemViewHolder) {
+		public void onBindLvl2Item(ViewHolder holder, ItemIndex index) {
+			if (holder instanceof Lvl2ItemViewHolder) {
 
-				SubsectionItemViewHolder subsectionItemViewHolder = (SubsectionItemViewHolder) holder;
+				Lvl2ItemViewHolder lvl2ItemViewHolder = (Lvl2ItemViewHolder) holder;
 
 				String title = bucket
 						.bucketList
@@ -353,10 +353,10 @@ public class MainActivity extends AppCompatActivity {
 						.itemList
 						.get(index.item);
 
-				subsectionItemViewHolder.icon1.setVisibility(View.VISIBLE);
-				subsectionItemViewHolder.icon2.setVisibility(View.VISIBLE);
+				lvl2ItemViewHolder.icon1.setVisibility(View.VISIBLE);
+				lvl2ItemViewHolder.icon2.setVisibility(View.VISIBLE);
 
-				subsectionItemViewHolder.title.setText(title);
+				lvl2ItemViewHolder.title.setText(title);
 			}
 		}
 
@@ -365,15 +365,15 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfLvl3SectionsForSection(int section, int subsection) {
-			return bucket.bucketList.get(section)
-					.bucketList.get(subsection)
+		public int getNumberOfLvl3SectionsForSection(int lvl1Section, int lvl2Section) {
+			return bucket.bucketList.get(lvl1Section)
+					.bucketList.get(lvl2Section)
 					.bucketList.size();
 		}
 
-		public class SubSubSectionViewHolder extends ViewHolder {
+		public class Lvl3SectionViewHolder extends ViewHolder {
 
-			public SubSubSectionViewHolder(View itemView) {
+			public Lvl3SectionViewHolder(View itemView) {
 				super(itemView);
 
 				itemView.setBackgroundResource(R.color.subsubsection);
@@ -389,15 +389,15 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		@Override
-		public ViewHolder onCreateSubSubsectionViewHolder(ViewGroup parent) {
-			return new SubSubSectionViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl3SectionViewHolder(ViewGroup parent) {
+			return new Lvl3SectionViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindSubsubsection(ViewHolder holder, final ItemIndex index) {
-			if (holder instanceof SubSubSectionViewHolder) {
+		public void onBindLvl3Section(ViewHolder holder, final ItemIndex index) {
+			if (holder instanceof Lvl3SectionViewHolder) {
 
-				final SubSubSectionViewHolder subSubSectionViewHolder = (SubSubSectionViewHolder) holder;
+				final Lvl3SectionViewHolder lvl3SectionViewHolder = (Lvl3SectionViewHolder) holder;
 
 				String title = bucket
 						.bucketList
@@ -408,20 +408,20 @@ public class MainActivity extends AppCompatActivity {
 						.get(index.lvl3Section)
 						.name;
 
-				subSubSectionViewHolder.title.setText(title);
+				lvl3SectionViewHolder.title.setText(title);
 
-				subSubSectionViewHolder.icon1.setVisibility(View.VISIBLE);
-				subSubSectionViewHolder.icon2.setVisibility(View.VISIBLE);
-				subSubSectionViewHolder.icon3.setVisibility(View.VISIBLE);
-				subSubSectionViewHolder.expand.setVisibility(View.VISIBLE);
+				lvl3SectionViewHolder.icon1.setVisibility(View.VISIBLE);
+				lvl3SectionViewHolder.icon2.setVisibility(View.VISIBLE);
+				lvl3SectionViewHolder.icon3.setVisibility(View.VISIBLE);
+				lvl3SectionViewHolder.expand.setVisibility(View.VISIBLE);
 
-				subSubSectionViewHolder.setOpen(index);
+				lvl3SectionViewHolder.setOpen(index);
 
-				subSubSectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+				lvl3SectionViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
 						openCloseLvl3Section(index);
-						subSubSectionViewHolder.setOpen(index);
+						lvl3SectionViewHolder.setOpen(index);
 					}
 				});
 			}
@@ -432,30 +432,30 @@ public class MainActivity extends AppCompatActivity {
 		 **/
 
 		@Override
-		public int getNumberOfLvl3ItemsForSection(int section, int subsection, int subSubsection) {
-			return bucket.bucketList.get(section)
-					.bucketList.get(subsection)
-					.bucketList.get(subSubsection)
+		public int getNumberOfLvl3ItemsForSection(int lvl1Section, int lvl2Section, int lvl3Section) {
+			return bucket.bucketList.get(lvl1Section)
+					.bucketList.get(lvl2Section)
+					.bucketList.get(lvl3Section)
 					.itemList.size();
 		}
 
-		public class SubSubSectionItemViewHolder extends ViewHolder {
+		public class Lvl3ItemViewHolder extends ViewHolder {
 
-			public SubSubSectionItemViewHolder(View itemView) {
+			public Lvl3ItemViewHolder(View itemView) {
 				super(itemView);
 			}
 		}
 
 		@Override
-		public ViewHolder onCreateSubSubsectionRowViewHolder(ViewGroup parent) {
-			return new SubSubSectionItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
+		public ViewHolder onCreateLvl3ItemViewHolder(ViewGroup parent) {
+			return new Lvl3ItemViewHolder(layoutInflater.inflate(R.layout.custom_row, parent, false));
 		}
 
 		@Override
-		public void onBindSubSubsectionRow(ViewHolder holder, ItemIndex index) {
-			if (holder instanceof SubSubSectionItemViewHolder) {
+		public void onBindLvl3Item(ViewHolder holder, ItemIndex index) {
+			if (holder instanceof Lvl3ItemViewHolder) {
 
-				SubSubSectionItemViewHolder subSubSectionItemViewHolder = (SubSubSectionItemViewHolder) holder;
+				Lvl3ItemViewHolder lvl3ItemViewHolder = (Lvl3ItemViewHolder) holder;
 
 				String title = bucket
 						.bucketList
@@ -467,11 +467,11 @@ public class MainActivity extends AppCompatActivity {
 						.itemList
 						.get(index.item);
 
-				subSubSectionItemViewHolder.icon1.setVisibility(View.VISIBLE);
-				subSubSectionItemViewHolder.icon2.setVisibility(View.VISIBLE);
-				subSubSectionItemViewHolder.icon3.setVisibility(View.VISIBLE);
+				lvl3ItemViewHolder.icon1.setVisibility(View.VISIBLE);
+				lvl3ItemViewHolder.icon2.setVisibility(View.VISIBLE);
+				lvl3ItemViewHolder.icon3.setVisibility(View.VISIBLE);
 
-				subSubSectionItemViewHolder.title.setText(title);
+				lvl3ItemViewHolder.title.setText(title);
 			}
 		}
 	}

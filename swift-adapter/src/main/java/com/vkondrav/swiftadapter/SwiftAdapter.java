@@ -145,19 +145,19 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	public T onCreateViewHolderItemType(ViewGroup parent, ItemType itemType) {
 		switch (itemType) {
 			case LVL3_ITEM:
-				return onCreateSubSubsectionRowViewHolder(parent);
+				return onCreateLvl3ItemViewHolder(parent);
 			case LVL2_ITEM:
-				return onCreateSubsectionRowViewHolder(parent);
+				return onCreateLvl2ItemViewHolder(parent);
 			case LVL1_ITEM:
-				return onCreateSectionRowViewHolder(parent);
+				return onCreateLvl1ItemViewHolder(parent);
 			case LVL0_ITEM:
-				return onCreateNoSectionRowViewHolder(parent);
+				return onCreateLvl0ItemViewHolder(parent);
 			case LVL3_SECTION:
-				return onCreateSubSubsectionViewHolder(parent);
+				return onCreateLvl3SectionViewHolder(parent);
 			case LVL2_SECTION:
-				return onCreateSubsectionViewHolder(parent);
+				return onCreateLvl2SectionViewHolder(parent);
 			case LVL1_SECTION:
-				return onCreateSectionViewHolder(parent);
+				return onCreateLvl1SectionViewHolder(parent);
 			default:
 				return null;
 		}
@@ -168,31 +168,31 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	 * overwrite the methods to create each viewholder
 	 **/
 
-	public T onCreateSectionViewHolder(ViewGroup parent) {
+	public T onCreateLvl1SectionViewHolder(ViewGroup parent) {
 		return null;
 	}
 
-	public T onCreateSubsectionViewHolder(ViewGroup parent) {
+	public T onCreateLvl2SectionViewHolder(ViewGroup parent) {
 		return null;
 	}
 
-	public T onCreateNoSectionRowViewHolder(ViewGroup parent) {
+	public T onCreateLvl0ItemViewHolder(ViewGroup parent) {
 		return null;
 	}
 
-	public T onCreateSectionRowViewHolder(ViewGroup parent) {
+	public T onCreateLvl1ItemViewHolder(ViewGroup parent) {
 		return null;
 	}
 
-	public T onCreateSubsectionRowViewHolder(ViewGroup parent) {
+	public T onCreateLvl2ItemViewHolder(ViewGroup parent) {
 		return null;
 	}
 
-	public T onCreateSubSubsectionRowViewHolder(ViewGroup parent) {
+	public T onCreateLvl3ItemViewHolder(ViewGroup parent) {
 		return null;
 	}
 
-	public T onCreateSubSubsectionViewHolder(ViewGroup parent) {
+	public T onCreateLvl3SectionViewHolder(ViewGroup parent) {
 		return null;
 	}
 
@@ -349,24 +349,24 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 	public void onBindViewHolderItemType(T holder, ItemIndex index, ItemType itemType) {
 		switch (itemType) {
 			case LVL3_ITEM:
-				onBindSubSubsectionRow(holder, index);
+				onBindLvl3Item(holder, index);
 				break;
 			case LVL2_ITEM:
-				onBindSubsectionRow(holder, index);
+				onBindLvl2Item(holder, index);
 				break;
 			case LVL1_ITEM:
-				onBindSectionRow(holder, index);
+				onBindLvl1Item(holder, index);
 				break;
 			case LVL0_ITEM:
-				onBindNoSectionRow(holder, index);
+				onBindLvl0Item(holder, index);
 				break;
 			case LVL3_SECTION:
-				onBindSubsubsection(holder, index);
+				onBindLvl3Section(holder, index);
 				break;
 			case LVL2_SECTION:
-				onBindSubsection(holder, index);
+				onBindLvl2Section(holder, index);
 			case LVL1_SECTION:
-				onBindSection(holder, index);
+				onBindLvl1Section(holder, index);
 		}
 	}
 
@@ -383,25 +383,25 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		onBindViewHolderItemType(holder, index, index.getType());
 	}
 
-	public void onBindSection(T holder, ItemIndex index) {
+	public void onBindLvl1Section(T holder, ItemIndex index) {
 	}
 
-	public void onBindSubsection(T holder, ItemIndex index) {
+	public void onBindLvl2Section(T holder, ItemIndex index) {
 	}
 
-	public void onBindNoSectionRow(T holder, ItemIndex index) {
+	public void onBindLvl0Item(T holder, ItemIndex index) {
 	}
 
-	public void onBindSectionRow(T holder, ItemIndex index) {
+	public void onBindLvl1Item(T holder, ItemIndex index) {
 	}
 
-	public void onBindSubsectionRow(T holder, ItemIndex index) {
+	public void onBindLvl2Item(T holder, ItemIndex index) {
 	}
 
-	public void onBindSubSubsectionRow(T holder, ItemIndex index) {
+	public void onBindLvl3Item(T holder, ItemIndex index) {
 	}
 
-	public void onBindSubsubsection(T holder, ItemIndex index) {
+	public void onBindLvl3Section(T holder, ItemIndex index) {
 	}
 
 	@Override
@@ -634,34 +634,34 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return String.format(Locale.US, "%d", section);
 	}
 
-	private String getLvl2SectionKey(int section, int subsection) {
-		return String.format(Locale.US, "%d%d", section, subsection);
+	private String getLvl2SectionKey(int lvl1Section, int lvl2Section) {
+		return String.format(Locale.US, "%d%d", lvl1Section, lvl2Section);
 	}
 
-	private String getLvl3SectionKey(int section, int subsection, int subSubsection) {
-		return String.format(Locale.US, "%d%d%d", section, subsection, subSubsection);
+	private String getLvl3SectionKey(int lvl1Section, int lvl2Section, int lvl3Section) {
+		return String.format(Locale.US, "%d%d%d", lvl1Section, lvl2Section, lvl3Section);
 	}
 
 	private int getNumberOfLvl2SectionForSectionS(int section) {
 		return isLvl1SectionOpened(section) ? getNumberOfLvl2SectionsForSection(section) : 0;
 	}
 
-	private int getNumberOfLvl3SectionsForSectionS(int section, int subsection) {
-		return isLvl1SectionOpened(section) && isLvl2SectionOpened(section, subsection) ?
-				getNumberOfLvl3SectionsForSection(section, subsection) : 0;
+	private int getNumberOfLvl3SectionsForSectionS(int lvl1Section, int lvl2Section) {
+		return isLvl1SectionOpened(lvl1Section) && isLvl2SectionOpened(lvl1Section, lvl2Section) ?
+				getNumberOfLvl3SectionsForSection(lvl1Section, lvl2Section) : 0;
 	}
 
-	private int getNumberOfLvl1ItemsForSectionS(int section) {
-		return isLvl1SectionOpened(section) ? getNumberOfLvl1ItemsForSection(section) : 0;
+	private int getNumberOfLvl1ItemsForSectionS(int lvl1Section) {
+		return isLvl1SectionOpened(lvl1Section) ? getNumberOfLvl1ItemsForSection(lvl1Section) : 0;
 	}
 
-	private int getNumberOfLvl2ItemForSectionS(int section, int subsection) {
-		return isLvl1SectionOpened(section) && isLvl2SectionOpened(section, subsection) ? getNumberOfLvl2ItemsForSection(section, subsection) : 0;
+	private int getNumberOfLvl2ItemForSectionS(int lvl1Section, int lvl2Section) {
+		return isLvl1SectionOpened(lvl1Section) && isLvl2SectionOpened(lvl1Section, lvl2Section) ? getNumberOfLvl2ItemsForSection(lvl1Section, lvl2Section) : 0;
 	}
 
-	private int getNumberOfLvl3ItemsForSectionS(int section, int subsection, int subSubsection) {
-		return isLvl1SectionOpened(section) && isLvl2SectionOpened(section, subsection) && isLvl3SectionOpened(section, subsection, subSubsection) ?
-				getNumberOfLvl3ItemsForSection(section, subsection, subSubsection) : 0;
+	private int getNumberOfLvl3ItemsForSectionS(int lvl1Section, int lvl2Section, int lvl3Section) {
+		return isLvl1SectionOpened(lvl1Section) && isLvl2SectionOpened(lvl1Section, lvl2Section) && isLvl3SectionOpened(lvl1Section, lvl2Section, lvl3Section) ?
+				getNumberOfLvl3ItemsForSection(lvl1Section, lvl2Section, lvl3Section) : 0;
 	}
 
 	public int getNumberOfLvl2SectionsForSection(int section) {
@@ -672,19 +672,19 @@ public abstract class SwiftAdapter<T extends RecyclerView.ViewHolder> extends Re
 		return 0;
 	}
 
-	public int getNumberOfLvl3SectionsForSection(int section, int subsection) {
+	public int getNumberOfLvl3SectionsForSection(int lvl1Section, int lvl2Section) {
 		return 0;
 	}
 
-	public int getNumberOfLvl1ItemsForSection(int section) {
+	public int getNumberOfLvl1ItemsForSection(int lvl1Section) {
 		return 0;
 	}
 
-	public int getNumberOfLvl2ItemsForSection(int section, int subsection) {
+	public int getNumberOfLvl2ItemsForSection(int lvl1Section, int lvl2Section) {
 		return 0;
 	}
 
-	public int getNumberOfLvl3ItemsForSection(int section, int subsection, int subSubsection) {
+	public int getNumberOfLvl3ItemsForSection(int lvl1Section, int lvl2Section, int lvl3Section) {
 		return 0;
 	}
 
