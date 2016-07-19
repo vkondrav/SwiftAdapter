@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/vkondrav/SwiftAdapter'
     gitUrl = 'https://github.com/vkondrav/SwiftAdapter.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '0.2.0'
 
     developerId = 'vkondrav'
     developerName = 'Vitaliy Kondratiev'
@@ -29,7 +29,7 @@ android {
     buildToolsVersion "24.0.0"
 
     def versionMajor = 0
-    def versionMinor = 1
+    def versionMinor = 2
     def versionPatch = 0
 
     defaultConfig {
