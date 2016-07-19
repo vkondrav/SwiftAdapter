@@ -1,4 +1,4 @@
- # SwiftAdapter
+## SwiftAdapter
 
 SwiftAdapter is an easy to use expandable list recyclerview adapter
 
@@ -21,7 +21,7 @@ A [sample] app has been included with the project, just compile and run. You can
 
 ### Import Using Gradle
 ```gradle
-compile 'com.vkondrav.swiftadapter:swift-adapter:0.1.0'
+compile 'com.vkondrav.swiftadapter:swift-adapter:0.2.0'
 ```
 
 ### Quickstart
