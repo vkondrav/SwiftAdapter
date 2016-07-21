@@ -13,7 +13,7 @@ SwiftAdapter is an easy to use expandable list recyclerview adapter
 
 ### Preview
 
-A [sample] app has been included with the project, just compile and run. You can also watch a [preview] video. I'm working on releasing a version to the play store soon.
+A [sample] app has been included with the project, just compile and run, or install this [sample apk]. You can also watch a [preview] video. I'm working on releasing a version to the play store soon.
 
 <a href="https://streamable.com/hgri">
 <img border="0" alt="SwiftAdapter" src="http://cdn.streamable.com/image/hgri.jpg" width="345" height="614">
@@ -26,7 +26,7 @@ compile 'com.vkondrav.swiftadapter:swift-adapter:0.2.0'
 
 ### Quickstart
 
-Extend the SwiftAdapter 
+Extend the SwiftAdapter
 ```java
 private static class Adapter extends SwiftAdapter<Adapter.ViewHolder> {
 ```
@@ -40,7 +40,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
 }
 ```
 
-Override count method to declare how many items of that type you will have 
+Override count method to declare how many items of that type you will have
 
 ```java
 @Override
@@ -99,8 +99,10 @@ public ItemIndex getCurrentItemIndex(T holder)
 
 License
 ----
-Apache 2.0
+[Apache 2.0]
 
 [//]:#
 [preview]: https://streamable.com/hgri
 [sample]: https://github.com/vkondrav/SwiftAdapter/tree/master/sample
+[sample apk]: https://github.com/vkondrav/SwiftAdapter/blob/master/sample/sample-apk/sample-release.apk
+[Apache 2.0]:http://www.apache.org/licenses/LICENSE-2.0
