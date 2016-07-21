@@ -8,3 +8,5 @@ local.properties
 build/
 *.iml
 *.apk
+!/sample/sample-apk/sample-release.apk
+*.keystore
