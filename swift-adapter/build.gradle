@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/vkondrav/SwiftAdapter'
     gitUrl = 'https://github.com/vkondrav/SwiftAdapter.git'
 
-    libraryVersion = '0.2.0'
+    libraryVersion = '0.2.1'
 
     developerId = 'vkondrav'
     developerName = 'Vitaliy Kondratiev'
@@ -26,11 +26,11 @@ ext {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.2"
 
     def versionMajor = 0
     def versionMinor = 2
-    def versionPatch = 0
+    def versionPatch = 1
 
     defaultConfig {
         minSdkVersion 15
@@ -48,8 +48,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
