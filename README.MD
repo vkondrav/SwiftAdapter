@@ -21,7 +21,7 @@ A [sample] app has been included with the project, just compile and run, or inst
 
 ### Import Using Gradle
 ```gradle
-compile 'com.vkondrav.swiftadapter:swift-adapter:0.2.0'
+compile 'com.vkondrav.swiftadapter:swift-adapter:0.2.1'
 ```
 
 ### Quickstart
