@@ -1,0 +1,7 @@
+language: android
+android:
+  components:
+    - platform-tools
+    - tools
+
+    - sys-img-armeabi-v7a-android-22
